@@ -79,3 +79,11 @@ class Word_Preprocess:
             bigram_one_hot_list.append([one_hot_values[X], one_hot_values[y]])
 
         return np.array(bigram_one_hot_list)
+		
+	def cosine_similarity(vec1, vec2):
+	    dot_product = np.dot(vec1, vec2)
+	    mag_vec1 = np.sqrt(sum(vec1 ** 2))
+	    mag_vec2 = np.sqrt(sum(vec2 ** 2))
+	
+	
+	    return dot_product / (mag_vec1 * mag)
