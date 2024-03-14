@@ -11,9 +11,6 @@ def cosine_similarity(vec1, vec2):
 
 
 class Word_Preprocess:
-
-    def __init__(self):
-        pass
     
     def __init__(self) -> None:
 	    self.stop_words = nltk.corpus.stopwords.words('english')
