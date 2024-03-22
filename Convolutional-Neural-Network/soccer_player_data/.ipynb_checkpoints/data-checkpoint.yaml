@@ -1,0 +1,13 @@
+train: C:\Users\Brand\project_env\PyTorch-Fundamentals\Convolutional-Neural-Network\soccer_player_data\train\images
+val: C:\Users\Brand\project_env\PyTorch-Fundamentals\Convolutional-Neural-Network\soccer_player_data\test\images
+test: C:\Users\Brand\project_env\PyTorch-Fundamentals\Convolutional-Neural-Network\soccer_player_data\valid\images
+
+nc: 2
+names: ['Soccer Ball', 'Soccer Player']
+
+roboflow:
+  workspace: busybee-uz3ur
+  project: soccer-player-detection-zft6t
+  version: 2
+  license: Private
+  url: https://app.roboflow.com/busybee-uz3ur/soccer-player-detection-zft6t/2
