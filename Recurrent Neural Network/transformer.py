@@ -1,11 +1,12 @@
 import torch
+import torch.nn as nn
 
-class Positional_Encoder:
+class Positional_Encoder(nn.Module):
     def __init__(self, max_length, batch):
         self.max_length = max_length
         self.batch = batch
         
-    def fit_transform(self):
+    def forward(self):
         d_model = len(self.batch)
         z_t = torch.zeros(2, self.max_length)
         
@@ -31,3 +32,8 @@ class Positional_Encoder:
                 k += 1
 
         return z_t
+
+class Scalar_Product_Attention(nn.Module):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        
