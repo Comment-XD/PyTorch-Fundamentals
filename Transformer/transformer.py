@@ -1,38 +1,30 @@
 import torch
 import torch.nn as nn
 
-class Positional_Encoder(nn.Module):
-    def __init__(self, max_length, batch):
-        self.max_length = max_length
-        self.batch = batch
+class Positional_Encoding(nn.Module):
+    def __init__(self, drop_value:float=0.1, n:int=10000, d_model:int=4, max_length:int=5000):
+        super().__init__()
+        """
+        drop_value (float) drop out value 
+        n: (int) constant value 
+        d_model (int): the dimension of the word embeddings 
+        max_length (int): the total words in a sentence 
         
-    def forward(self):
-        d_model = len(self.batch)
-        z_t = torch.zeros(2, self.max_length)
+        """
+        self.divisor = torch.exp(torch.arange(0, d_model, 2) * -(math.log(n) / d_model)) # Creates the denominator component 
+        self.drop_out = nn.Dropout(drop_value)
+    
+        self.k = torch.arange(0, max_length).unsqueeze(dim=1) # Creates the position elements 
+        self.pe = torch.zeros(max_length, d_model) # Creates the empty array that will store the positional encodings
         
-        pos_vector = torch.Tensor([[i] for i in range(d_model)])
+        self.pe[:, 0::2] = torch.sin(self.k * self.divisor) # For every row and even column, implement sin function
+        self.pe[:, 1::2] = torch.cos(self.k * self.divisor)
+        
+        self.pe.squeeze(0)
 
-        even_index = torch.arange(0, self.max_length, 2)
-        odd_index = torch.arange(1, self.max_length, 2)
-
-        even_denominator = torch.pow(10000, (2 * even_index) / d_model)
-        odd_denominator = torch.pow(10000, (2 * odd_index) / d_model)
-
-        even_pos_encoding = torch.sin(pos_vector / even_denominator)
-        odd_pos_encoding = torch.cos(pos_vector / odd_denominator)
-
-
-        j = k = 0
-        for i in range(self.max_length):
-            if i % 2 == 0:
-                z_t[:, i] = even_pos_encoding[:, j]
-                j += 1
-            else:
-                z_t[:, i] = odd_pos_encoding[:, k]
-                k += 1
-
-        return z_t
-
+    def forward(self, x):
+        return self.drop_out(x + self.pe[:x.size(0)].requires_grad_(False))
+        
 class Scalar_Product_Attention(nn.Module):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
