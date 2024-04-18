@@ -28,7 +28,7 @@ class Positional_Encoding(nn.Module):
         return self.drop_out(x + self.pe[:x.size(1)].requires_grad_(False))
         
 class Scalar_Dot_Product_Attention(nn.Module):
-    def __init__(self, d_model:int, mask=None) -> None:
+    def __init__(self, d_model:int, dropout_value:int=0.1, mask=None) -> None:
         super().__init__()
 
         """
@@ -41,6 +41,8 @@ class Scalar_Dot_Product_Attention(nn.Module):
         self.Qw = nn.Linear(d_model, d_model, bias=False)
         self.Kw = nn.Linear(d_model, d_model, bias=False)
         self.Vw = nn.Linear(d_model, d_model, bias=False)
+
+		self.dropout = nn.Dropout(dropout_value)
 
     def forward(self, X:torch.Tensor()) -> torch.Tensor():
         """
@@ -55,13 +57,13 @@ class Scalar_Dot_Product_Attention(nn.Module):
         scaled_dot_prod = (Q @ K.permute(0,2,1)) / math.sqrt(d_model)
         attention_prob = scaled_dot_prod.softmax(dim=-1)
 
-        attention_scores = attention_prob @ V
+        attention_scores = self.dropout(attention_prob @ V)
 
         return attention_scores
 
 
 class Multi_Head_Attention(nn.Module):
-    def __init__(self, d_model:int, heads:int:4, dropout_value:int=0.1, mask=None) -> None:
+    def __init__(self, d_model:int, heads:int=4, dropout_value:int=0.1, mask=None) -> None:
         super().__init__()
 
         """
@@ -116,4 +118,29 @@ class Multi_Head_Attention(nn.Module):
         attention_scores = self.Ow(A)
         
         return attention_scores
+
+class LayerNorm(nn.Module):
+    def __init__(self, shape:list, eps:int=1e-5):
+        super().__init__()
+
+        self.shape = shape
+
+        # Declaring the Gamma Weights (Initiliazed with ones)
+        self.G = nn.Parameter(torch.ones(shape))
+
+        # Declaring the Beta Weights (Initialized with ones)
+        self.B = nn.Parameter(torch.zeros(shape))
+
+        # Declaring epsilon (small constant to prevent division of 0)
+        self.epsilon = eps
+
+    def forward(self, X):
+
+		# Finding the mean of the input X
+        X_m = X.mean(dim=-1, keepdims=True)
+
+		# Finding the 
+        X_v = X.var(dim=-1, keepdims=True, unbiased=True)
+
+        return self.G * (X - X_m) / (torch.sqrt(X_v + self.epsilon)) + self.B 
         
