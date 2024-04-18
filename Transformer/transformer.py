@@ -42,7 +42,7 @@ class Scalar_Dot_Product_Attention(nn.Module):
         self.Kw = nn.Linear(d_model, d_model, bias=False)
         self.Vw = nn.Linear(d_model, d_model, bias=False)
 
-		self.dropout = nn.Dropout(dropout_value)
+	self.dropout = nn.Dropout(dropout_value)
 
     def forward(self, X:torch.Tensor()) -> torch.Tensor():
         """
